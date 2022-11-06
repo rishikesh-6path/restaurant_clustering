@@ -1,0 +1,104 @@
+dataset = read.csv("zomato_1.csv")
+#creating a subset consists of restaurants only from india
+data<- subset(dataset,dataset$Country.Code == "1")
+data
+str(data)
+
+#creating a subset for 1st kmeans clustering
+X <- data[,c(11,17)]
+X
+
+sum(is.na(data))
+
+summary(data)
+
+x<- data$Average.Cost.for.two
+
+y <- data$Aggregate.rating
+
+#covariance btw price range and rating
+covariance = cov(data$Price.range, data$Aggregate.rating)
+print(covariance)
+
+#correlation btw price range and rating
+corr_value = cor(X)
+print(corr_value)
+
+#pearson coefficient 
+cval_pearson = cor(x,y,method = "pearson")
+cval_pearson
+#spearman coefficient
+cval_spearman = cor(x,y,method = "spearman")
+cval_spearman
+
+#visuallization of correlation
+
+library(corrplot)
+corrplot(corr_value
+         ,method="circle")
+
+cor(X)
+
+#optimal number of clusters
+set.seed(6)
+wcss <- vector()
+for (i in 1:10) wcss[i] <- sum(kmeans(X , i)$withinss)
+plot(1:10, wcss, type = "b" , main = paste("clusters" , xlab="number of clusters", ylab = "WCSS"))
+
+#applying k-Means
+set.seed(29)
+kmeans <- kmeans(X,4,iter.max = 300, nstart = 10)
+
+#visualizing clusters
+library(cluster)
+clusplot(X,
+         kmeans$cluster,
+         lines = 0,
+         shade = TRUE,
+         color = TRUE,
+         labels = 2,
+         plotchar = FALSE,
+         span = TRUE,
+         main = paste("Clusters of restaurants"),
+         xlab = "Avg Price for 2",
+         ylab = "Rating for the restaurant")
+#Encoding categorical data
+data$Has.Table.booking = factor(data$Has.Table.booking,
+                                levels = c('No','Yes'),
+                                labels = c(0,1))
+data$Has.Online.delivery = factor(data$Has.Online.delivery,
+                                  levels = c('No','Yes'),
+                                  labels = c(0,1))
+
+
+#subset for reservation and online delivery
+data$Has.Online.delivery
+data$Has.Table.booking
+Y <- data[,c(13,14)]
+Y
+
+set.seed(6)
+wcss <- vector()
+for (i in 1:10) wcss[i] <- sum(kmeans(Y , i)$withinss)
+plot(1:10, wcss, type = "b" , main = paste("clusters" , xlab="number of clusters", ylab = "WCSS"))
+
+#applying k-Means
+set.seed(29)
+kmeans <- kmeans(Y,4,iter.max = 300, nstart = 10)
+
+#visualizing clusters
+library(cluster)
+clusplot(Y,
+         kmeans$cluster,
+         lines = 0,
+         shade = TRUE,
+         color = TRUE,
+         labels = 2,
+         plotchar = FALSE,
+         span = TRUE,
+         main = paste("Clusters of restaurants"),
+         xlab = "Reservation",
+         ylab = "Online Delivery")
+
+
+ xdata
